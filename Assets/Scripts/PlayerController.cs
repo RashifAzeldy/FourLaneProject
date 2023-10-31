@@ -5,8 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] Animator playerAnim;
+    [SerializeField] EntityStats playerStats;
 
     UsedHand m_usedHand;
+    bool canChangeHand;
 
     private void Start()
     {
@@ -23,46 +25,41 @@ public class PlayerController : MonoBehaviour
         if ( Input.GetKeyDown(KeyCode.UpArrow) )
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
-            CheckPunchAnimation();
+            canChangeHand = true;
         }
         else if ( Input.GetKeyDown(KeyCode.DownArrow) )
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
-            CheckPunchAnimation();
+            canChangeHand = true;
         }
         else if ( Input.GetKeyDown(KeyCode.RightArrow) )
         {
             transform.rotation = Quaternion.Euler(0, 90, 0);
-            CheckPunchAnimation();
+            canChangeHand = true;
         }
         else if ( Input.GetKeyDown(KeyCode.LeftArrow) )
         {
             transform.rotation = Quaternion.Euler(0, -90, 0);
-            CheckPunchAnimation();
+            canChangeHand = true;
+        }
+
+        if ( canChangeHand )
+        {
+            canChangeHand = false;
+            GameFunctionLibrary.Instance.CheckPunchAnimation(m_usedHand, playerAnim);
+            ChangeHand();
         }
     }
 
-    void CheckPunchAnimation()
+    void ChangeHand()
     {
         if ( m_usedHand == UsedHand.Left )
         {
-            // Play Right Hand Punch
-            playerAnim.SetTrigger("Right_Punch");
-            // Switch The Next Punch to Right
             m_usedHand = UsedHand.Right;
         }
         else
         {
-            // Play Left Hand Punch
-            playerAnim.SetTrigger("Left_Punch");
-            // Switch The Next Punch to Left
             m_usedHand = UsedHand.Left;
         }
     }
-}
-
-enum UsedHand
-{
-    Right,
-    Left
 }
