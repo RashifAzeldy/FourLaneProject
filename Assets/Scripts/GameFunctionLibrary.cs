@@ -27,4 +27,20 @@ public class GameFunctionLibrary : MonoBehaviour
             anim.SetTrigger("Left_Punch");
         }
     }
+
+    public int CheckHighScore(int finalScore, int latestHighscore )
+    {
+        int highscore = 0;
+
+        if(finalScore > latestHighscore )
+        {
+            highscore = finalScore;
+        }
+        else
+        {
+            highscore = latestHighscore;
+        }
+
+        return highscore;
+    }
 }

@@ -8,13 +8,11 @@ public class HandsScript : MonoBehaviour
 
     private void OnTriggerEnter( Collider other )
     {
-        if(other.tag == "Enemy" && other.GetComponent<EnemyAI>() )
+        if ( other.tag == "Enemy" && other.GetComponent<EnemyScript>() ||
+           other.tag == "Player" && other.GetComponent<PlayerController>() )
         {
             // Apply Damage to Enemy
-            Debug.Log("Hit, Damage : " + userStats.EntityAttackDamage);
-        }else if (other.tag == "Player" && other.GetComponent<PlayerController>() )
-        {
-            //Apply Damage to Player
+            GameFunctionLibrary.Instance.ApplyAttackDamage(userStats, other.GetComponent<EntityStats>());
         }
     }
 }

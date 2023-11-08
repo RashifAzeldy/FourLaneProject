@@ -6,18 +6,33 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] Animator playerAnim;
     [SerializeField] EntityStats playerStats;
+    [SerializeField] BoxCollider rightHandCollider;
+    [SerializeField] BoxCollider leftHandCollider;
+
+    PlayerStatus status;
 
     UsedHand m_usedHand;
     bool canChangeHand;
 
+
     private void Start()
     {
+        status = GetComponent<PlayerStatus>();
         m_usedHand = UsedHand.Left;
+
+        rightHandCollider.enabled = false;
+        leftHandCollider.enabled = false;
     }
 
     void Update()
     {
         Attack();
+
+        if ( Input.GetKeyDown(KeyCode.Escape) )
+        {
+            status.PlayerHighscore = GameFunctionLibrary.Instance.CheckHighScore(status.PlayerScore, status.PlayerHighscore);
+            UIManager.Instance.GameOver(status.PlayerScore, status.PlayerHighscore);
+        }
     }
 
     void Attack()
@@ -46,9 +61,29 @@ public class PlayerController : MonoBehaviour
         if ( canChangeHand )
         {
             canChangeHand = false;
+            if ( m_usedHand == UsedHand.Left )
+            {
+                rightHandCollider.enabled = true;
+            }
+            else
+            {
+                leftHandCollider.enabled = true;
+            }
             GameFunctionLibrary.Instance.CheckPunchAnimation(m_usedHand, playerAnim);
+            StartCoroutine(ColliderActiveDelay());
             ChangeHand();
         }
+    }
+
+    IEnumerator ColliderActiveDelay()
+    {
+        while ( playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.5f )
+        {
+            yield return null;
+        }
+
+        rightHandCollider.enabled = false;
+        leftHandCollider.enabled = false;
     }
 
     void ChangeHand()

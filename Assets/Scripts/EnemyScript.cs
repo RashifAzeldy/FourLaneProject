@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyScript : MonoBehaviour
 {
+    [SerializeField] EntityStats enemyStats;
     [SerializeField] Animator anim;
     [SerializeField] Transform player;
     [SerializeField] float attackDistance = 1.0f;
+
+    [SerializeField] BoxCollider rightHand;
+    [SerializeField] BoxCollider leftHand;
 
     NavMeshAgent agent;
     UsedHand hand;
@@ -19,6 +23,9 @@ public class EnemyAI : MonoBehaviour
         agent.destination = player.position;
 
         hand = UsedHand.Left;
+
+        rightHand.enabled = false;
+        leftHand.enabled = false;
     }
 
     private void Update()
@@ -34,11 +41,20 @@ public class EnemyAI : MonoBehaviour
         {
             agent.SetDestination(player.position);
         }
+
+        if(enemyStats.EntityHealth <= 0 )
+        {
+            // The Enemy is Dead
+            player.GetComponent<PlayerStatus>().PlayerScore++;
+            gameObject.SetActive(false);
+        }
     }
 
     IEnumerator EnemyAttacking()
     {
         isAttacking = true;
+        rightHand.enabled = true;
+        leftHand.enabled = true;
         GameFunctionLibrary.Instance.CheckPunchAnimation(hand, anim);
         yield return new WaitForSeconds(1f);
         if(hand == UsedHand.Left )
@@ -50,5 +66,7 @@ public class EnemyAI : MonoBehaviour
             hand = UsedHand.Left;
         }
         isAttacking = false;
+        rightHand.enabled = false;
+        leftHand.enabled = false;
     }
 }
